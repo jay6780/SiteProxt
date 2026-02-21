@@ -6,6 +6,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Siteproxy</title>
+
+<script>
+  const observer = new MutationObserver(() => {
+    // Look for any div containing the "SiteProxy" text and hide it
+    document.querySelectorAll('div').forEach(el => {
+      if (el.textContent.includes('SiteProxy') && el.style.backgroundColor === 'red') {
+        el.style.display = 'none';
+      }
+      // Keep your original check just in case
+      if (el.style && el.style.zIndex === '10000') {
+        el.style.display = 'none';
+      }
+    });
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+</script>
+    
     <style>
         body {
             display: flex;
@@ -136,6 +153,13 @@
         .dark-mode a {
             color: #dddddd;
         }
+
+        div[style*="z-index: 10000"], 
+div[style*="background-color: red"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+}
     </style>
 </head>
 
