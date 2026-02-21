@@ -10,16 +10,28 @@
 
 <script>
   const observer = new MutationObserver(() => {
-    // 1. Hide the Red Banner
+    // 1. Target by Text Content and Style properties
     document.querySelectorAll('div').forEach(el => {
-      if (el.textContent.includes('SiteProxy') && el.style.backgroundColor === 'red') {
-        el.remove(); // Use .remove() instead of display:none to clean up the DOM
+      const text = el.innerText || "";
+      const style = window.getComputedStyle(el);
+      
+      // Look for the SiteProxy text OR the specific high z-index and red color
+      if (
+        text.includes('SiteProxy') || 
+        style.zIndex === '10000' || 
+        style.backgroundColor === 'rgb(255, 0, 0)'
+      ) {
+        el.remove();
+        // Also reset the body margin that SiteProxy adds
+        document.body.style.marginTop = '0px';
       }
     });
 
-    // 2. Find and remove the Cloudflare Beacon script
-    document.querySelectorAll('script[src*="cloudflareinsights.com"]').forEach(script => {
-      script.remove();
+    // 2. Remove "Proxy fetch error" messages specifically
+    document.querySelectorAll('body > *').forEach(el => {
+      if (el.innerText && el.innerText.includes('Proxy fetch error')) {
+        el.remove();
+      }
     });
   });
   
@@ -157,11 +169,18 @@
             color: #dddddd;
         }
 
-        div[style*="z-index: 10000"], 
+/* Force hide anything that looks like the proxy banner */
+div[style*="z-index: 10000"], 
+div[style*="background-color: rgb(255, 0, 0)"],
 div[style*="background-color: red"] {
     display: none !important;
     visibility: hidden !important;
-    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+body {
+    margin-top: 0 !important; /* Force the gap at the top to close */
 }
     </style>
 </head>
