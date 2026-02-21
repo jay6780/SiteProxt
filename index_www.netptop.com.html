@@ -2,6 +2,7 @@
 <html lang="zh-Hans">
 
 <head>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';">
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,17 +10,19 @@
 
 <script>
   const observer = new MutationObserver(() => {
-    // Look for any div containing the "SiteProxy" text and hide it
+    // 1. Hide the Red Banner
     document.querySelectorAll('div').forEach(el => {
       if (el.textContent.includes('SiteProxy') && el.style.backgroundColor === 'red') {
-        el.style.display = 'none';
-      }
-      // Keep your original check just in case
-      if (el.style && el.style.zIndex === '10000') {
-        el.style.display = 'none';
+        el.remove(); // Use .remove() instead of display:none to clean up the DOM
       }
     });
+
+    // 2. Find and remove the Cloudflare Beacon script
+    document.querySelectorAll('script[src*="cloudflareinsights.com"]').forEach(script => {
+      script.remove();
+    });
   });
+  
   observer.observe(document.documentElement, { childList: true, subtree: true });
 </script>
     
